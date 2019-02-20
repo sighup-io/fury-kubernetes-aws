@@ -8,10 +8,22 @@ variable "env" {
   description = "ElastiCache cluster environment"
 }
 
-variable "node-type" {
+variable "region" {
+  type        = "string"
+  default     = "eu-west-1"
+  description = "AWS region"
+}
+
+variable "redis-nodes-count" {
+  type        = "string"
+  default     = 1
+  description = "ElastiCache cluster nodes number"
+}
+
+variable "redis-nodes-type" {
   type        = "string"
   default     = "cache.t2.medium"
-  description = "ElastiCache cluster node type"
+  description = "ElastiCache cluster nodes type"
 }
 
 variable "redis-version" {
@@ -20,9 +32,19 @@ variable "redis-version" {
   description = "ElastiCache Redis engine version"
 }
 
+variable "redis-snapshots-retention" {
+  type        = "string"
+  default     = 7
+  description = "ElastiCache Redis snapshosts retention days"
+}
+
 variable "subnets" {
   type        = "list"
   description = "List of AWS subnet IDs"
+}
+
+provider "aws" {
+  region = "${var.region}"
 }
 
 data "aws_subnet" "main" {
