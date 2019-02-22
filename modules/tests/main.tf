@@ -117,3 +117,14 @@ module "test-aws-kubernetes" {
     "${file("fixtures/terraform.pub")}",
   ]
 }
+
+module "test-aws-elasticache" {
+  source            = "../aws-elasticache"
+  name              = "omega"
+  env               = "staging"
+  subnets = "${module.test-aws-vpc.private_subnets}"
+  redis-nodes-count = 6
+  redis-password = "prettypleasechangeme"
+  redis-version = "4.0.10"
+  redis-snapshots-retention = 15
+}

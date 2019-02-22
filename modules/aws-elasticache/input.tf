@@ -26,6 +26,11 @@ variable "redis-nodes-type" {
   description = "ElastiCache cluster nodes type"
 }
 
+variable "redis-password" {
+  type = "string"
+  description = "ElastiCache Redis password"
+}
+
 variable "redis-version" {
   type        = "string"
   default     = "5.0.0"
