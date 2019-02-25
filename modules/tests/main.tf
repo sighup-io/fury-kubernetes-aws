@@ -123,7 +123,7 @@ module "test-aws-elasticache" {
   name              = "omega"
   env               = "staging"
   subnets = "${module.test-aws-vpc.private_subnets}"
-  redis-nodes-count = 6
+  redis-nodes-count = 3
   redis-password = "prettypleasechangeme"
   redis-version = "4.0.10"
   redis-snapshots-retention = 15

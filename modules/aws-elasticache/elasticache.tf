@@ -20,7 +20,7 @@
 
 resource "aws_elasticache_subnet_group" "main" {
   name       = "${var.name}-${var.env}"
-  subnet_ids = ["${slice(data.aws_subnet.main.*.id, 0, max(var.redis-nodes-count, length(var.subnets)))}"]
+  subnet_ids = ["${slice(data.aws_subnet.main.*.id, 0, var.redis-nodes-count > length(var.subnets) ? length(var.subnets) : var.redis-nodes-count)}"]
 }
 
 resource "aws_security_group" "main" {
@@ -49,7 +49,7 @@ resource "aws_elasticache_replication_group" "main" {
   node_type                     = "${var.redis-nodes-type}"
   automatic_failover_enabled    = "${var.redis-nodes-count > 1 ? true : false}"
   auto_minor_version_upgrade    = true
-  availability_zones            = ["${slice(data.aws_subnet.main.*.availability_zone, 0, max(var.redis-nodes-count, length(var.subnets)))}"]
+  availability_zones            = ["${slice(data.aws_subnet.main.*.availability_zone, 0, var.redis-nodes-count > length(var.subnets) ? length(var.subnets) : var.redis-nodes-count)}"]
   engine                        = "redis"
   engine_version                = "${var.redis-version}"
   transit_encryption_enabled    = true
