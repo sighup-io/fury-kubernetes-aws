@@ -1,5 +1,3 @@
 .terraform
 *.tfstate
 *.backup
-packer/ami.json
-.envrc
