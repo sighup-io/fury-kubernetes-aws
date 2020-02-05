@@ -61,3 +61,8 @@ variable "security-group-id" {
   type = "string"
   description = "security group to attach on instances"
 }
+
+variable ssh-public-keys {
+  type        = "list"
+  description = "List of public SSH keys authorized to connect to instances"
+}

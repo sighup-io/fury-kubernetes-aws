@@ -4,6 +4,7 @@ resource "aws_instance" "ec2" {
   instance_type          = "${var.instance-type}"
   subnet_id              = "${element(var.subnets, count.index)}"
   vpc_security_group_ids = ["${var.security-group-id}"]
+  user_data              = "${data.template_cloudinit_config.config.rendered}"
 
   root_block_device {
     volume_type           = "gp2"
