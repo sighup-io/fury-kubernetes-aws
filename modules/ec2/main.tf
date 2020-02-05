@@ -1,0 +1,32 @@
+resource "aws_instance" "ec2" {
+  count                  = "${var.instance-count}"
+  ami                    = "${data.aws_ami.ec2.id}"
+  instance_type          = "${var.instance-type}"
+  subnet_id              = "${element(var.subnets, count.index)}"
+  vpc_security_group_ids = ["${var.security-group-id}"]
+
+  root_block_device {
+    volume_type           = "gp2"
+    volume_size           = "${var.root-volume-size}"
+    delete_on_termination = "true"
+  }
+
+  tags {
+    Name              = "instance-${var.name}-${var.env}-${count.index + 1}"
+  }
+}
+
+resource "aws_route53_record" "k8s-master" {
+  count   = "${var.instance-count}"
+  zone_id = "${var.zone-id}"
+  name    = "${var.name}-${count.index + 1}"
+  type    = "A"
+  ttl     = "600"
+
+  records = [
+    "${element(aws_instance.ec2.*.private_ip, count.index)}",
+  ]
+}
+
+
+
