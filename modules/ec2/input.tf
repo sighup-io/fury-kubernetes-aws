@@ -66,3 +66,13 @@ variable ssh-public-keys {
   type        = "list"
   description = "List of public SSH keys authorized to connect to instances"
 }
+
+variable "assign-eip-address" {
+  description = "Assign an Elastic IP address to the instance"
+  default     = "true"
+}
+
+variable "associate-public-ip-address" {
+  description = "Associate a public IP address with the instance"
+  default     = "true"
+}

@@ -3,6 +3,7 @@ resource "aws_instance" "ec2" {
   ami                    = "${data.aws_ami.ec2.id}"
   instance_type          = "${var.instance-type}"
   subnet_id              = "${element(var.subnets, count.index)}"
+  associate_public_ip_address = "${var.associate-public-ip-address}"
   vpc_security_group_ids = ["${var.security-group-id}"]
   user_data              = "${data.template_cloudinit_config.config.rendered}"
 
@@ -30,4 +31,8 @@ resource "aws_route53_record" "k8s-master" {
 }
 
 
-
+resource "aws_eip" "eip" {
+  count             = "${var.associate-public-ip-address == "true" && var.assign-eip-address == "true"}"
+  network_interface = "${aws_instance.ec2.primary_network_interface_id}"
+  vpc               = "true"
+}
