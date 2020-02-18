@@ -14,14 +14,14 @@ resource "aws_instance" "ec2" {
   }
 
   tags {
-    Name              = "instance-${var.name}-${var.env}-${count.index + 1}"
+    Name              = "instance-${var.name}-${var.env}-${count.index}"
   }
 }
 
-resource "aws_route53_record" "k8s-master" {
+resource "aws_route53_record" "ec2" {
   count   = "${var.instance-count}"
   zone_id = "${var.zone-id}"
-  name    = "${var.name}-${count.index + 1}"
+  name    = "${var.name}-${count.index}"
   type    = "A"
   ttl     = "600"
 
@@ -32,7 +32,7 @@ resource "aws_route53_record" "k8s-master" {
 
 
 resource "aws_eip" "eip" {
-  count             = "${var.associate-public-ip-address == "true" && var.assign-eip-address == "true"}"
-  network_interface = "${aws_instance.ec2.primary_network_interface_id}"
+  count             = "${var.associate-public-ip-address == "true" && var.assign-eip-address == "true"  ? var.instance-count : 0}"
+  network_interface = "${element(aws_instance.ec2.*.primary_network_interface_id, count.index)}"
   vpc               = "true"
 }

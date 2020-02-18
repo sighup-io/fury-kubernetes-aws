@@ -76,3 +76,22 @@ variable "associate-public-ip-address" {
   description = "Associate a public IP address with the instance"
   default     = "true"
 }
+
+
+variable ssh-private-key {
+  type        = "string"
+  description = "Path to own private key to access machines"
+}
+
+
+variable user {
+  type        = "string"
+  description = "default user on ec2"
+  default = "ubuntu"
+}
+
+variable "ansible-name" {
+  type = "string"
+  default = "instance"
+  description = "Name on group and instances on generated hosts ini"
+}
