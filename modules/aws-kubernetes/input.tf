@@ -212,3 +212,4 @@ data "aws_route53_zone" "additional" {
   count   = "${var.additional-domain == "" ? 0 : 1}"
   zone_id = "${var.additional-domain}"
 }
+

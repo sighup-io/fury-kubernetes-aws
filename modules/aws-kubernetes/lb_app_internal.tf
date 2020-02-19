@@ -33,7 +33,7 @@ resource "aws_lb_listener" "k8s-nodes-http-internal" {
 data "aws_acm_certificate" "internal" {
   count       = "${length(var.kube-lb-internal-additional-domains)}"
   domain      = "${element(formatlist("%s.%s", var.kube-lb-internal-additional-domains, replace(data.aws_route53_zone.additional.0.name, "/[.]$/", "")), count.index)}"
-  statuses    = ["ISSUED"]
+  statuses    = ["ISSUED","PENDING_VALIDATION"]
   most_recent = true
 }
 
