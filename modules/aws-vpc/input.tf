@@ -9,16 +9,6 @@ variable "az-count" {
   default     = 3
 }
 
-variable "bastion-vpn-enable" {
-  type    = "string"
-  default = true
-}
-
-variable "bastion-ssh-enable" {
-  type    = "string"
-  default = true
-}
-
 variable "name" {
   type = "string"
 }
@@ -41,43 +31,6 @@ variable "additional-zone" {
   type        = "string"
   default     = ""
   description = "Additional domain name for internal services"
-}
-
-variable "bastion-instance-type" {
-  type    = "string"
-  default = "t3.small"
-}
-
-variable "bastion-count" {
-  type    = "string"
-  default = 2
-}
-
-variable "bastion-ami" {
-  type    = "string"
-  default = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-*"
-}
-
-variable "ssh-public-keys" {
-  type        = "list"
-  description = "List of public SSH keys authorized to connect to the bastions"
-}
-
-variable "bastion-ami-owner" {
-  type = "string"
-  default = "099720109477"
-  description = "Bastion nodes AMI Owner"
-}
-
-
-data "aws_ami" "main" {
-  most_recent = true
-  owners = ["${var.bastion-ami-owner}"]
-
-  filter {
-    name   = "name"
-    values = ["${var.bastion-ami}"]
-  }
 }
 
 data "aws_availability_zones" "available" {}

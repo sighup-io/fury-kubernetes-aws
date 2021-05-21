@@ -5,12 +5,20 @@ resource "aws_launch_template" "spot" {
   instance_type = "${lookup(var.kube-workers-spot[count.index], "type")}"
   user_data     = "${element(data.template_cloudinit_config.config_spot.*.rendered, count.index)}"
 
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      volume_size = "${lookup(var.kube-workers-spot[count.index], "disk", 0) == 0 ? 50 : lookup(var.kube-workers-spot[count.index], "disk", 0)}"
+    }
+  }
+
   iam_instance_profile {
     name = "${aws_iam_instance_profile.main.name}"
   }
 
   network_interfaces {
     security_groups = ["${aws_security_group.kubernetes-nodes.id}"]
+    delete_on_termination = true
   }
 
   lifecycle {
@@ -86,4 +94,27 @@ resource "aws_autoscaling_group" "spot" {
     create_before_destroy = true
     ignore_changes = ["desired_capacity"]
   }
+}
+
+
+resource "aws_autoscaling_schedule" "spot_workers_morning_start" {
+
+  count = "${var.enable_weekday_workers_shutdown ? length(var.kube-workers-spot) : 0}"
+  scheduled_action_name  = "Morning-Start-Schedule"
+  min_size               = "${lookup(var.kube-workers-spot[count.index], "min")}"
+  max_size               = "${lookup(var.kube-workers-spot[count.index], "max")}"
+  desired_capacity       = "${lookup(var.kube-workers-spot[count.index], "desired")}"
+  recurrence             = "0 5 * * 1-5"
+  autoscaling_group_name = "${element(aws_autoscaling_group.spot.*.name,count.index)}"
+}
+
+resource "aws_autoscaling_schedule" "spot_workers_afternoon_stop" {
+
+  count = "${var.enable_weekday_workers_shutdown ? length(var.kube-workers-spot) : 0}"
+  scheduled_action_name  = "Afternoon-Stop-Schedule"
+  min_size               = 0
+  max_size               = 0
+  desired_capacity       = 0
+  recurrence             = "45 23 * * *"
+  autoscaling_group_name = "${element(aws_autoscaling_group.spot.*.name,count.index)}"
 }

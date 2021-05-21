@@ -72,6 +72,15 @@ resource "aws_security_group_rule" "k8s-node-node-exporter" {
   security_group_id = "${aws_security_group.kubernetes-nodes.id}"
 }
 
+resource "aws_security_group_rule" "k8s-node-calico-metrics" {
+  type              = "ingress"
+  from_port         = 9091
+  to_port           = 9091
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.kubernetes-nodes.id}"
+}
+
 resource "aws_security_group_rule" "k8s-node-kubelet" {
   type              = "ingress"
   from_port         = 10255
@@ -222,6 +231,15 @@ resource "aws_security_group_rule" "k8s-master-node-exporter" {
   type              = "ingress"
   from_port         = 9100
   to_port           = 9100
+  protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.kubernetes-master.id}"
+}
+
+resource "aws_security_group_rule" "k8s-master-calico-metrics" {
+  type              = "ingress"
+  from_port         = 9091
+  to_port           = 9091
   protocol          = "tcp"
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = "${aws_security_group.kubernetes-master.id}"
