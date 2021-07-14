@@ -1,11 +1,11 @@
 resource "aws_ecr_repository" "main" {
-  count = "${length(var.ecr-repositories)}"
-  name  = "${element(var.ecr-repositories, count.index)}"
+  count = length(var.ecr-repositories)
+  name  = element(var.ecr-repositories, count.index)
 }
 
 resource "aws_ecr_lifecycle_policy" "main" {
-  count      = "${length(var.ecr-repositories)}"
-  repository = "${element(aws_ecr_repository.main.*.name, count.index)}"
+  count      = length(var.ecr-repositories)
+  repository = element(aws_ecr_repository.main.*.name, count.index)
 
   policy = <<EOF
 {
@@ -27,8 +27,7 @@ resource "aws_ecr_lifecycle_policy" "main" {
             "rulePriority": 2,
             "description": "Keep last 100 images",
             "selection": {
-                "tagStatus": "tagged",
-                "tagPrefixList": ["v"],
+                "tagStatus": "any",
                 "countType": "imageCountMoreThan",
                 "countNumber": 100
             },
@@ -39,6 +38,7 @@ resource "aws_ecr_lifecycle_policy" "main" {
     ]
 }
 EOF
+
 }
 
 resource "aws_iam_user" "pusher" {
@@ -48,12 +48,12 @@ resource "aws_iam_user" "pusher" {
 
 resource "aws_iam_policy_attachment" "pusher" {
   name       = "${var.name}-${var.env}-ecr-pusher"
-  users      = ["${aws_iam_user.pusher.name}"]
-  policy_arn = "${aws_iam_policy.pusher.arn}"
+  users      = [aws_iam_user.pusher.name]
+  policy_arn = aws_iam_policy.pusher.arn
 }
 
 resource "aws_iam_access_key" "pusher" {
-  user = "${aws_iam_user.pusher.name}"
+  user = aws_iam_user.pusher.name
 }
 
 resource "aws_iam_policy" "pusher" {
@@ -84,6 +84,7 @@ resource "aws_iam_policy" "pusher" {
     ]
 }
 EOF
+
 }
 
 locals {
@@ -94,8 +95,10 @@ export AWS_DEFAULT_REGION=${var.region}
 # `aws ecr get-login --no-include-email --region eu-west-1`
 #${join("\n#", aws_ecr_repository.main.*.repository_url)}
 EOF
+
 }
 
 output "ecr-pusher" {
-  value = "${local.ecr-pusher}"
+  value = local.ecr-pusher
 }
+
